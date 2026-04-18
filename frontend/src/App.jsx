@@ -683,6 +683,16 @@ const Dashboard = ({ initialGoal = '', setInitialGoal, voiceEnabled }) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ goal: finalGoal })
       });
+
+      if (!response.ok) {
+        throw new Error(`Server Error: ${response.status}`);
+      }
+
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        throw new TypeError("Expected JSON from server but received something else.");
+      }
+
       const data = await response.json();
       setResults(data);
 

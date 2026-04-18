@@ -7,6 +7,11 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
+// Health Check for Proxy Verification
+app.get('/', (req, res) => {
+  res.json({ status: "online", system: "Nexus-V11.0", port: PORT });
+});
+
 /**
  * AUTOFLOW AI - "NEXUS ORCHESTRATOR" (v11.0)
  * 1st Place Hackathon Edition - Advanced Multi-Module Mesh
