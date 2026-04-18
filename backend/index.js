@@ -152,8 +152,13 @@ app.use((req, res) => {
   res.status(404).json({ error: "Route not found in Nexus Backend" });
 });
 
-app.listen(5000, '0.0.0.0', () => {
-  console.log(`🚀 NEXUS ORCHESTRATOR ONLINE`);
-  console.log(`📡 Portal: http://127.0.0.1:5000`);
-  console.log(`🛠️ Route: POST /api/agent`);
-});
+// Export for Vercel Serverless
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(5000, '0.0.0.0', () => {
+    console.log(`🚀 NEXUS ORCHESTRATOR ONLINE`);
+    console.log(`📡 Portal: http://127.0.0.1:5000`);
+    console.log(`🛠️ Route: POST /api/agent`);
+  });
+}
+
+module.exports = app;
