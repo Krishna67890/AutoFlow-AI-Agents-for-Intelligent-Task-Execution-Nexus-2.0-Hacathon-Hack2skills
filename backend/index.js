@@ -120,7 +120,30 @@ const REASONING_PATTERNS = {
 };
 
 app.post('/api/agent', async (req, res) => {
-  // ... existing code ...
+  const { goal } = req.body;
+  if (!goal) return res.status(400).json({ error: 'Goal is required' });
+
+  await new Promise(r => setTimeout(r, 1000));
+
+  const input = goal.toUpperCase();
+  let pattern = REASONING_PATTERNS.DEFAULT;
+
+  if (input.includes('FLEET')) pattern = REASONING_PATTERNS.FLEET_CONTROL;
+  else if (input.includes('MCP') || input.includes('HUB')) pattern = REASONING_PATTERNS.MCP_HUB_SYNC;
+  else if (input.includes('SECURITY') || input.includes('AUDIT')) pattern = REASONING_PATTERNS.SECURITY_AUDIT_DEEP;
+  else if (input.includes('VOICE') || input.includes('LISTEN')) pattern = REASONING_PATTERNS.VOICE_ORCHESTRATION;
+  else if (input.includes('MARKET')) pattern = REASONING_PATTERNS.STRATEGIC_MARKET_AUDIT;
+
+  res.json({
+    runId: `AF-${Math.random().toString(36).substr(2, 6).toUpperCase()}`,
+    graphNodes: pattern.graph,
+    steps: pattern.steps,
+    stats: {
+      tokens: (Math.random() * 3000 + 1000).toFixed(0),
+      cost: `$0.${(Math.random() * 10 + 2).toFixed(2)}`,
+      reliability: "99.9%"
+    }
+  });
 });
 
 // Catch-all for 404s

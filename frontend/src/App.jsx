@@ -678,7 +678,10 @@ const Dashboard = ({ initialGoal = '', setInitialGoal, voiceEnabled }) => {
     setEdges(initialEdges);
 
     try {
-      const apiUrl = import.meta.env.DEV ? 'http://127.0.0.1:5000/api/agent' : '/api/agent';
+      // Robust URL resolution for both Dev and Production (Hackathon Resilience)
+      const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      const apiUrl = isLocal ? 'http://127.0.0.1:5000/api/agent' : '/api/agent';
+
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
