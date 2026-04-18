@@ -1,4 +1,13 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import ReactFlow, {
+  Background,
+  Controls,
+  MiniMap,
+  Handle,
+  Position,
+  MarkerType
+} from 'reactflow';
+import 'reactflow/dist/style.css';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Zap,
@@ -114,14 +123,24 @@ const Navbar = ({ onMenuClick, navigate, currentPath }) => (
   <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-4 md:px-8 md:py-6 backdrop-blur-xl bg-dark/40 border-b border-white/5 no-print">
     <div className="max-w-[1600px] mx-auto flex items-center justify-between">
       <div className="flex items-center gap-4 cursor-pointer" onClick={() => navigate('/')}>
-        <div className="w-11 h-11 bg-gradient-to-tr from-primary to-accent rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(0,242,254,0.2)] border border-white/10">
-          <BrainCircuit className="text-dark" size={26} />
+        <div className="relative group">
+          <div className="w-12 h-12 bg-gradient-to-tr from-primary to-accent rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(0,242,254,0.2)] border border-white/10 overflow-hidden">
+            <img
+              src="https://images.unsplash.com/photo-1614850523296-d8c1af93d400?w=100&h=100&fit=crop"
+              alt="Logo"
+              className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
+            />
+            <div className="absolute inset-0 flex items-center justify-center bg-dark/20 backdrop-blur-[1px]">
+               <BrainCircuit className="text-white" size={24} />
+            </div>
+          </div>
+          <div className="absolute -inset-1 bg-primary/20 rounded-2xl blur opacity-0 group-hover:opacity-100 transition-opacity" />
         </div>
         <div>
-          <span className="text-2xl font-black tracking-tighter bg-gradient-to-r from-primary to-white bg-clip-text text-transparent block">
+          <span className="text-2xl font-black tracking-tighter bg-gradient-to-r from-primary to-white bg-clip-text text-transparent block leading-none">
             AUTOFLOW AI
           </span>
-          <span className="text-[9px] font-black text-gray-500 uppercase tracking-[0.4em] hidden sm:block">v11.0 Elite Mesh</span>
+          <span className="text-[9px] font-black text-gray-500 uppercase tracking-[0.4em] hidden sm:block mt-1">v11.0 Elite Mesh</span>
         </div>
       </div>
 
@@ -134,6 +153,9 @@ const Navbar = ({ onMenuClick, navigate, currentPath }) => (
         </CustomNavLink>
         <CustomNavLink to="/about" navigate={navigate} currentPath={currentPath} className="transition-colors flex items-center gap-2" activeClass="text-primary">
           <Info size={14} /> Mission
+        </CustomNavLink>
+        <CustomNavLink to="/architecture" navigate={navigate} currentPath={currentPath} className="transition-colors flex items-center gap-2" activeClass="text-primary">
+          <Layers size={14} /> Architecture
         </CustomNavLink>
       </div>
 
@@ -161,6 +183,7 @@ const Sidebar = ({ navigate, currentPath }) => (
         { icon: <Bot size={20} />, label: "Fleet Control", path: "/fleet" },
         { icon: <Server size={20} />, label: "MCP Hub", path: "/mcp" },
         { icon: <ShieldAlert size={20} />, label: "Security Audit", path: "/security" },
+        { icon: <Layers size={20} />, label: "Architecture", path: "/architecture" },
         { icon: <Users size={20} />, label: "Mission", path: "/about" },
         { icon: <Settings size={20} />, label: "Advanced Config", path: "/settings" }
       ].map((item, i) => (
@@ -225,6 +248,7 @@ const MobileNav = ({ isOpen, setIsOpen, navigate, currentPath }) => (
             { label: 'Fleet Mesh', path: '/fleet' },
             { label: 'MCP Hub', path: '/mcp' },
             { label: 'Security', path: '/security' },
+            { label: 'Architecture', path: '/architecture' },
             { label: 'Mission', path: '/about' },
             { label: 'Settings', path: '/settings' }
           ].map((item) => (
@@ -324,6 +348,7 @@ const AboutUs = ({ voiceEnabled }) => {
     {
       name: "Krishna Patil Rajput",
       role: "LEAD DEVELOPER",
+      image: "https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=400&h=400&fit=crop",
       icon: <Code size={32} className="text-primary" />,
       desc: "Architected the multi-agent orchestration engine, custom routing, and high-fidelity dashboard UI.",
       speech: "Krishna Patil Rajput. Lead Developer. He architected the multi-agent orchestration engine and high-fidelity dashboard UI."
@@ -331,6 +356,7 @@ const AboutUs = ({ voiceEnabled }) => {
     {
       name: "Hima Krishna Priya",
       role: "PPT MAKER & STRATEGIST",
+      image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop",
       icon: <Layers size={32} className="text-accent" />,
       desc: "Designed the technical strategy, visual presentations, and mission-control logic for winning Nexus 2.0.",
       speech: "Hima Krishna Priya. Strategist. She designed the technical strategy and mission-control logic for the Nexus 2 point 0 hackathon."
@@ -364,7 +390,16 @@ const AboutUs = ({ voiceEnabled }) => {
               className="glass-card p-10 relative overflow-hidden group hover:border-primary/50 transition-all cursor-pointer"
             >
               <div className="mb-6 flex justify-between items-start">
-                {member.icon}
+                <div className="relative">
+                  <img
+                    src={member.image}
+                    alt={member.name}
+                    className="w-20 h-20 rounded-2xl object-cover border-2 border-white/10 group-hover:border-primary/50 transition-all shadow-xl"
+                  />
+                  <div className="absolute -bottom-2 -right-2 bg-dark p-1.5 rounded-lg border border-white/10">
+                    {member.icon}
+                  </div>
+                </div>
                 <Volume2 size={16} className="text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
               <h3 className="text-2xl font-black uppercase tracking-tighter mb-2 group-hover:text-primary transition-colors">{member.name}</h3>
@@ -474,6 +509,24 @@ const SettingsPage = ({ voiceEnabled, setVoiceEnabled }) => {
   );
 };
 
+const AgentNode = ({ data }) => (
+  <div className={`px-4 py-2 shadow-md rounded-md bg-dark border-2 transition-all ${data.active ? 'border-primary shadow-[0_0_15px_rgba(0,242,254,0.4)]' : 'border-white/10'}`}>
+    <Handle type="target" position={Position.Top} className="w-2 h-2 !bg-primary" />
+    <div className="flex items-center">
+      <div className={`rounded-full p-2 mr-2 ${data.active ? 'bg-primary/20 text-primary' : 'bg-white/5 text-gray-500'}`}>
+        {data.icon}
+      </div>
+      <div className="ml-2">
+        <div className="text-[10px] font-black uppercase text-white">{data.label}</div>
+        <div className="text-[8px] font-bold text-gray-500 uppercase tracking-tighter">{data.status}</div>
+      </div>
+    </div>
+    <Handle type="source" position={Position.Bottom} className="w-2 h-2 !bg-primary" />
+  </div>
+);
+
+const nodeTypes = { agent: AgentNode };
+
 const Dashboard = ({ initialGoal = '', setInitialGoal, voiceEnabled }) => {
   const [goal, setGoal] = useState(initialGoal);
   const [suggestions, setSuggestions] = useState([]);
@@ -485,15 +538,34 @@ const Dashboard = ({ initialGoal = '', setInitialGoal, voiceEnabled }) => {
   const [isListening, setIsListening] = useState(false);
   const streamEndRef = useRef(null);
 
+  // Flow State
+  const initialNodes = useMemo(() => [
+    { id: '1', type: 'agent', position: { x: 250, y: 0 }, data: { label: 'Orchestrator', status: 'Idle', icon: <Terminal size={14}/>, active: false } },
+    { id: '2', type: 'agent', position: { x: 0, y: 150 }, data: { label: 'Research Bot', status: 'Idle', icon: <Search size={14}/>, active: false } },
+    { id: '3', type: 'agent', position: { x: 250, y: 150 }, data: { label: 'Code Architect', status: 'Idle', icon: <Code size={14}/>, active: false } },
+    { id: '4', type: 'agent', position: { x: 500, y: 150 }, data: { label: 'Security Sentinal', status: 'Idle', icon: <Shield size={14}/>, active: false } },
+    { id: '5', type: 'agent', position: { x: 250, y: 300 }, data: { label: 'Deployment Agent', status: 'Idle', icon: <Rocket size={14}/>, active: false } },
+  ], []);
+
+  const initialEdges = useMemo(() => [
+    { id: 'e1-2', source: '1', target: '2', animated: false, style: { stroke: '#333' } },
+    { id: 'e1-3', source: '1', target: '3', animated: false, style: { stroke: '#333' } },
+    { id: 'e1-4', source: '1', target: '4', animated: false, style: { stroke: '#333' } },
+    { id: 'e2-5', source: '2', target: '5', animated: false, style: { stroke: '#333' } },
+    { id: 'e3-5', source: '3', target: '5', animated: false, style: { stroke: '#333' } },
+    { id: 'e4-5', source: '4', target: '5', animated: false, style: { stroke: '#333' } },
+  ], []);
+
+  const [nodes, setNodes] = useState(initialNodes);
+  const [edges, setEdges] = useState(initialEdges);
+
   // Text-to-Speech Helper
   const speak = (text) => {
     if (typeof window !== 'undefined' && window.speechSynthesis && voiceEnabled) {
-      // Cancel any ongoing speech
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.rate = 1.1;
       utterance.pitch = 1.0;
-      // You can pick a specific voice if you want
       const voices = window.speechSynthesis.getVoices();
       const preferredVoice = voices.find(v => v.name.includes('Google US English') || v.name.includes('Female'));
       if (preferredVoice) utterance.voice = preferredVoice;
@@ -599,6 +671,10 @@ const Dashboard = ({ initialGoal = '', setInitialGoal, voiceEnabled }) => {
     setActiveLogIdx(-1);
     setShowApproval(false);
 
+    // Reset Flow UI
+    setNodes(initialNodes);
+    setEdges(initialEdges);
+
     try {
       const response = await fetch('/api/agent', {
         method: 'POST',
@@ -611,11 +687,29 @@ const Dashboard = ({ initialGoal = '', setInitialGoal, voiceEnabled }) => {
       let currentLog = 0;
       const interval = setInterval(() => {
         if (currentLog < data.steps.length) {
+          const step = data.steps[currentLog];
           setActiveLogIdx(currentLog);
-          // Speak the agent's action
-          speak(`${data.steps[currentLog].agent}: ${data.steps[currentLog].message}`);
+          speak(`${step.agent}: ${step.message}`);
 
-          if (data.steps[currentLog].type === 'hitl') {
+          // Update Flow UI based on agent
+          setNodes(prev => prev.map(n => {
+             const isActive = step.agent.includes(n.data.label) || (n.id === '1' && step.agent === 'Nexus');
+             return {
+               ...n,
+               data: { ...n.data, active: isActive, status: isActive ? 'Processing...' : 'Idle' }
+             };
+          }));
+
+          setEdges(prev => prev.map(e => {
+            const isSourceActive = step.agent.includes(nodes.find(n => n.id === e.source)?.data.label);
+            return {
+              ...e,
+              animated: isSourceActive,
+              style: { stroke: isSourceActive ? '#00f2fe' : '#333' }
+            };
+          }));
+
+          if (step.type === 'hitl') {
             setShowApproval(true);
             speak("Human intervention required to proceed.");
             clearInterval(interval);
@@ -623,9 +717,11 @@ const Dashboard = ({ initialGoal = '', setInitialGoal, voiceEnabled }) => {
           currentLog++;
         } else {
           speak("Mission successfully completed.");
+          setNodes(initialNodes);
+          setEdges(initialEdges);
           clearInterval(interval);
         }
-      }, 2500); // Increased timing for better speech flow
+      }, 3000);
 
     } catch (err) {
       console.error(err);
@@ -734,56 +830,81 @@ const Dashboard = ({ initialGoal = '', setInitialGoal, voiceEnabled }) => {
           </div>
 
           <div className="lg:col-span-8 xl:col-span-9 flex flex-col gap-6 order-1 lg:order-2">
-            <div className="glass-card flex-1 p-6 md:p-8 relative overflow-hidden bg-black/60 min-h-[500px] print:bg-white print:text-black">
-              <div className="flex items-center justify-between mb-10 border-b border-white/5 pb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 rounded-full bg-primary shadow-[0_0_10px_rgba(0,242,254,0.8)] animate-pulse print:hidden" />
-                  <h4 className="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] print:text-black">Neural Stream: {goal || 'Standby'}</h4>
-                </div>
-                {results && (
-                  <button onClick={() => window.print()} className="p-2 bg-white/5 rounded-lg border border-white/10 hover:text-primary transition-all no-print">
-                    <Printer size={16} />
-                  </button>
-                )}
-              </div>
-
-              <div className="space-y-6 font-mono text-xs md:text-sm overflow-y-auto max-h-[600px] scrollbar-hide print:max-h-none">
-                <AnimatePresence>
-                  {results && results.steps.map((step, i) => (
-                    i <= activeLogIdx && (
-                      <motion.div key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="flex gap-4">
-                        <span className="text-white/10 font-black shrink-0 mt-1">[{i+1}]</span>
-                        <div className="space-y-1">
-                          <span className="text-[9px] font-black bg-white/5 px-2 py-0.5 rounded border border-white/10 text-primary uppercase print:text-black">{step.agent}</span>
-                          <p className={`leading-relaxed ${step.type === 'error' ? 'text-red-400' : 'text-gray-300'} print:text-black`}>{step.message}</p>
-                          {step.type === 'hitl' && showApproval && (
-                            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="mt-4 p-4 border border-orange-500/30 bg-orange-500/10 rounded-xl no-print">
-                               <p className="text-[10px] font-black text-orange-400 uppercase tracking-widest mb-3">Intervention Required</p>
-                               <div className="flex gap-3">
-                                  <button onClick={handleApprove} className="px-4 py-2 bg-orange-500 text-dark font-black text-[10px] uppercase rounded-lg hover:bg-orange-400 transition-all">Approve & Deploy</button>
-                                  <button onClick={() => { setResults(null); setGoal(''); }} className="px-4 py-2 bg-white/5 text-gray-400 font-black text-[10px] uppercase rounded-lg border border-white/10 hover:bg-white/10 transition-all">Abnormal Terminate</button>
-                               </div>
-                            </motion.div>
-                          )}
-                        </div>
-                      </motion.div>
-                    )
-                  ))}
-                </AnimatePresence>
-                <div ref={streamEndRef} />
-              </div>
-
-              {activeLogIdx >= (results?.steps.length - 1) && !showApproval && (
-                <div className="mt-10 pt-6 border-t border-white/5 flex items-center justify-between no-print">
-                  <div className="flex gap-8 text-[10px] font-black uppercase tracking-widest text-primary">
-                    <span>RELIAIBLITY: 99.9%</span>
-                    <span>LATENCY: 4ms</span>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[500px]">
+               {/* Neural Stream Terminal */}
+               <div className="glass-card p-6 md:p-8 relative overflow-hidden bg-black/60 flex flex-col print:bg-white print:text-black">
+                  <div className="flex items-center justify-between mb-6 border-b border-white/5 pb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-2 h-2 rounded-full bg-primary shadow-[0_0_10px_rgba(0,242,254,0.8)] animate-pulse print:hidden" />
+                      <h4 className="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] print:text-black">Neural Stream: {goal || 'Standby'}</h4>
+                    </div>
+                    {results && (
+                      <button onClick={() => window.print()} className="p-2 bg-white/5 rounded-lg border border-white/10 hover:text-primary transition-all no-print">
+                        <Printer size={16} />
+                      </button>
+                    )}
                   </div>
-                  <div className="flex items-center gap-2 text-primary font-black text-[10px] uppercase tracking-widest">
-                    <CheckCircle2 size={16} /> MISSION SUCCESS
+
+                  <div className="flex-1 space-y-6 font-mono text-xs overflow-y-auto scrollbar-hide print:max-h-none">
+                    <AnimatePresence>
+                      {results && results.steps.map((step, i) => (
+                        i <= activeLogIdx && (
+                          <motion.div key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="flex gap-4">
+                            <span className="text-white/10 font-black shrink-0 mt-1">[{i+1}]</span>
+                            <div className="space-y-1">
+                              <span className="text-[9px] font-black bg-white/5 px-2 py-0.5 rounded border border-white/10 text-primary uppercase print:text-black">{step.agent}</span>
+                              <p className={`leading-relaxed ${step.type === 'error' ? 'text-red-400' : 'text-gray-300'} print:text-black`}>
+                                {step.message}
+                              </p>
+                              {step.type === 'hitl' && showApproval && (
+                                <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="mt-4 p-4 border border-orange-500/30 bg-orange-500/10 rounded-xl no-print">
+                                   <p className="text-[10px] font-black text-orange-400 uppercase tracking-widest mb-3">Intervention Required</p>
+                                   <div className="flex gap-3">
+                                      <button onClick={handleApprove} className="px-4 py-2 bg-orange-500 text-dark font-black text-[10px] uppercase rounded-lg hover:bg-orange-400 transition-all">Approve & Deploy</button>
+                                      <button onClick={() => { setResults(null); setGoal(''); }} className="px-4 py-2 bg-white/5 text-gray-400 font-black text-[10px] uppercase rounded-lg border border-white/10 hover:bg-white/10 transition-all">Abnormal Terminate</button>
+                                   </div>
+                                </motion.div>
+                              )}
+                            </div>
+                          </motion.div>
+                        )
+                      ))}
+                    </AnimatePresence>
+                    <div ref={streamEndRef} />
                   </div>
-                </div>
-              )}
+
+                  {activeLogIdx >= (results?.steps.length - 1) && !showApproval && (
+                    <div className="mt-6 pt-6 border-t border-white/5 flex items-center justify-between no-print">
+                      <div className="flex gap-4 text-[9px] font-black uppercase tracking-widest text-primary">
+                        <span>RELIAIBLITY: 99.9%</span>
+                        <span>LATENCY: 4ms</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-primary font-black text-[9px] uppercase tracking-widest">
+                        <CheckCircle2 size={14} /> SUCCESS
+                      </div>
+                    </div>
+                  )}
+               </div>
+
+               {/* Multi-Agent Swarm Visualization */}
+               <div className="glass-card relative overflow-hidden bg-black/40 border-white/5 flex flex-col">
+                  <div className="p-4 border-b border-white/5 flex justify-between items-center">
+                    <h4 className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Swarm Mesh Visualization</h4>
+                    <span className="text-[8px] font-mono text-primary animate-pulse">LIVE NODE LINK</span>
+                  </div>
+                  <div className="flex-1 w-full h-full relative">
+                    <ReactFlow
+                      nodes={nodes}
+                      edges={edges}
+                      nodeTypes={nodeTypes}
+                      fitView
+                      proOptions={{ hideAttribution: true }}
+                      className="bg-transparent"
+                    >
+                      <Background color="#1a1c2e" gap={20} />
+                    </ReactFlow>
+                  </div>
+               </div>
             </div>
           </div>
         </div>
@@ -887,52 +1008,110 @@ const FleetPage = () => {
 
 const McpHub = () => {
   const [syncing, setSyncing] = useState(null);
+  const [demoMode, setDemoMode] = useState(false);
+  const [logs, setLogs] = useState([
+    "INFO: MCP Registry initialized.",
+    "INFO: 8 local tools detected."
+  ]);
   const tools = ['GitHub', 'Slack', 'PostgreSQL', 'Docker', 'Stripe', 'Tavily', 'ArXiv', 'Terminal'];
 
   const handleSync = (tool) => {
     setSyncing(tool);
-    setTimeout(() => setSyncing(null), 2000);
+    const newLog = `SYNC: Initializing handshake with ${tool}...`;
+    setLogs(prev => [newLog, ...prev].slice(0, 10));
+    setTimeout(() => {
+      setSyncing(null);
+      setLogs(prev => [`SUCCESS: ${tool} protocol synchronized.`, ...prev].slice(0, 10));
+    }, 2000);
   };
+
+  useEffect(() => {
+    let interval;
+    if (demoMode) {
+      interval = setInterval(() => {
+        const randomTool = tools[Math.floor(Math.random() * tools.length)];
+        handleSync(randomTool);
+      }, 5000);
+    }
+    return () => clearInterval(interval);
+  }, [demoMode]);
 
   return (
     <div className="py-32 px-4 lg:px-8 xl:ml-64 lg:ml-20 min-h-screen no-print">
       <div className="max-w-6xl mx-auto">
-          <div className="flex justify-between items-center mb-12">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-6">
             <div>
               <h1 className="text-5xl font-black uppercase tracking-tighter mb-2">MCP Tool Hub</h1>
               <p className="text-gray-500 uppercase tracking-widest font-bold text-xs">Model Context Protocol Synchronization</p>
             </div>
-            <button onClick={() => handleSync('ALL')} className="px-6 py-3 bg-primary text-dark text-[10px] font-black uppercase tracking-widest rounded-xl glow-btn">
-              Sync All Tools
-            </button>
+            <div className="flex gap-4">
+              <button
+                onClick={() => setDemoMode(!demoMode)}
+                className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${demoMode ? 'bg-accent text-dark shadow-[0_0_20px_rgba(247,37,133,0.4)]' : 'bg-white/5 border border-white/10 text-gray-500'}`}
+              >
+                {demoMode ? 'Stop Demo Mode' : 'Start Demo Mode'}
+              </button>
+              <button onClick={() => handleSync('ALL')} className="px-6 py-3 bg-primary text-dark text-[10px] font-black uppercase tracking-widest rounded-xl glow-btn">
+                Sync All Tools
+              </button>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {tools.map((tool) => (
-              <div key={tool} className="glass-card p-8 border-white/5 flex flex-col items-center text-center group relative overflow-hidden">
-                  <div className={`w-16 h-16 rounded-2xl mb-6 flex items-center justify-center border transition-all ${syncing === tool || syncing === 'ALL' ? 'bg-primary/20 border-primary animate-pulse' : 'bg-white/5 border-white/10 group-hover:border-primary/50'}`}>
-                    <Unplug size={32} className={syncing === tool || syncing === 'ALL' ? 'text-primary' : 'text-gray-500'} />
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div className="lg:col-span-8 grid grid-cols-2 md:grid-cols-4 gap-6">
+              {tools.map((tool) => (
+                <div key={tool} className="glass-card p-6 border-white/5 flex flex-col items-center text-center group relative overflow-hidden h-48 justify-center">
+                    <div className={`w-14 h-14 rounded-2xl mb-4 flex items-center justify-center border transition-all ${syncing === tool || (syncing === 'ALL') ? 'bg-primary/20 border-primary animate-pulse' : 'bg-white/5 border-white/10 group-hover:border-primary/50'}`}>
+                      <Unplug size={28} className={syncing === tool || (syncing === 'ALL') ? 'text-primary' : 'text-gray-500'} />
+                    </div>
+                    <h3 className="text-xs font-black uppercase mb-1">{tool}</h3>
+                    <p className="text-[7px] text-primary font-black uppercase tracking-tighter">
+                      {syncing === tool || (syncing === 'ALL') ? 'SYNCING...' : 'CONNECTED'}
+                    </p>
+
+                    <button
+                      onClick={() => handleSync(tool)}
+                      className="mt-4 text-[7px] font-black uppercase tracking-widest text-gray-600 hover:text-primary transition-colors"
+                    >
+                      Refresh
+                    </button>
+
+                    {syncing === tool && (
+                      <motion.div
+                        layoutId="sync-glow"
+                        className="absolute inset-0 bg-primary/5 pointer-events-none"
+                      />
+                    )}
+                </div>
+              ))}
+            </div>
+
+            <div className="lg:col-span-4">
+               <div className="glass-card p-6 border-white/5 h-full flex flex-col bg-black/40">
+                  <div className="flex items-center gap-2 mb-6 border-b border-white/5 pb-4">
+                     <Terminal size={14} className="text-primary" />
+                     <h3 className="text-[10px] font-black uppercase tracking-widest text-gray-500">Live MCP Registry</h3>
                   </div>
-                  <h3 className="text-sm font-black uppercase mb-1">{tool}</h3>
-                  <p className="text-[8px] text-primary font-black uppercase tracking-tighter">
-                    {syncing === tool || syncing === 'ALL' ? 'SYNCING...' : 'CONNECTED'}
-                  </p>
-
-                  <button
-                    onClick={() => handleSync(tool)}
-                    className="mt-6 text-[8px] font-black uppercase tracking-widest text-gray-600 hover:text-primary transition-colors"
-                  >
-                    Refresh Protocol
-                  </button>
-
-                  {syncing === tool && (
-                    <motion.div
-                      layoutId="sync-glow"
-                      className="absolute inset-0 bg-primary/5 pointer-events-none"
-                    />
-                  )}
-              </div>
-            ))}
+                  <div className="flex-1 font-mono text-[9px] space-y-3 overflow-y-auto">
+                     {logs.map((log, i) => (
+                       <motion.div
+                         key={i}
+                         initial={{ opacity: 0, x: -10 }}
+                         animate={{ opacity: 1, x: 0 }}
+                         className={`p-2 rounded border border-white/5 ${log.includes('SUCCESS') ? 'text-green-400 bg-green-500/5' : log.includes('SYNC') ? 'text-primary bg-primary/5' : 'text-gray-500'}`}
+                       >
+                         {log}
+                       </motion.div>
+                     ))}
+                  </div>
+                  <div className="mt-6 pt-4 border-t border-white/5">
+                     <div className="flex justify-between items-center text-[8px] font-black uppercase">
+                        <span className="text-gray-600">Active Handshakes</span>
+                        <span className="text-primary">{syncing ? 1 : 0}</span>
+                     </div>
+                  </div>
+               </div>
+            </div>
           </div>
       </div>
     </div>
@@ -1059,6 +1238,119 @@ const SecurityPage = ({ onTransfer }) => {
                 </div>
             </div>
           </div>
+
+          <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+             {[
+               { title: "Sandboxed Execution", desc: "All agent actions are executed in isolated Docker containers with zero network egress unless explicitly whitelisted.", icon: <Box size={20} /> },
+               { title: "Prompt Sanitization", desc: "Incoming objectives are scanned for prompt injection patterns and recursive loop triggers before hitting the reasoning engine.", icon: <Shield size={20} /> },
+               { title: "Audit Trail", desc: "Immutable logs of every agent decision and tool call are stored for post-mission forensic analysis.", icon: <FileText size={20} /> }
+             ].map((p, i) => (
+               <div key={i} className="glass-card p-6 border-white/5">
+                  <div className="text-primary mb-4">{p.icon}</div>
+                  <h4 className="text-xs font-black uppercase mb-2">{p.title}</h4>
+                  <p className="text-[10px] text-gray-500 font-medium leading-relaxed">{p.desc}</p>
+               </div>
+             ))}
+          </div>
+      </div>
+    </div>
+  );
+};
+
+const ArchitecturePage = () => {
+  const layers = [
+    {
+      title: "1. Strategic Intent Layer",
+      icon: <BrainCircuit className="text-primary" />,
+      desc: "Raw user input is processed via Whisper-V3 or Terminal. Intent is parsed into a high-level goal using the Nexus Reasoning Engine.",
+      details: ["Natural Language Processing", "Voice Intent Recognition", "Goal Decomposition"]
+    },
+    {
+      title: "2. Orchestration Mesh",
+      icon: <Cpu className="text-accent" />,
+      desc: "The Central Orchestrator dynamically assigns sub-tasks to specialized agents based on capability scoring.",
+      details: ["Dynamic Agent Allocation", "Cross-Agent Communication", "State Persistence"]
+    },
+    {
+      title: "3. MCP Tool Integration",
+      icon: <Unplug className="text-yellow-400" />,
+      desc: "Model Context Protocol (MCP) bridge allows agents to interact with external tools like GitHub, Slack, and SQL databases securely.",
+      details: ["Standardized Tool Execution", "Secure API Handshakes", "Context Injection"]
+    },
+    {
+      title: "4. Security & Guardrail Layer",
+      icon: <ShieldCheck className="text-green-400" />,
+      desc: "Every action is passed through the Sentinel Audit layer. Sandboxed execution and prompt injection protection are mandatory.",
+      details: ["Sandboxed Runtime", "Injection Sanitization", "Human-in-the-loop (HITL)"]
+    }
+  ];
+
+  return (
+    <div className="py-32 px-4 lg:px-8 xl:ml-64 lg:ml-20 min-h-screen no-print">
+      <div className="max-w-5xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-16"
+        >
+          <h1 className="text-5xl font-black uppercase tracking-tighter mb-4">System Architecture</h1>
+          <p className="text-gray-500 uppercase tracking-widest font-bold text-xs">Deep Dive into the AutoFlow AI Neural Mesh</p>
+        </motion.div>
+
+        <div className="relative border-l border-white/10 ml-4 pl-12 space-y-16">
+          {layers.map((layer, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.1 }}
+              className="relative"
+            >
+              <div className="absolute -left-[61px] top-0 w-12 h-12 bg-dark border border-white/10 rounded-xl flex items-center justify-center z-10">
+                {layer.icon}
+              </div>
+              <div className="glass-card p-8 border-white/5 hover:border-primary/20 transition-all">
+                <h3 className="text-xl font-black uppercase mb-4 text-white flex items-center gap-3">
+                   {layer.title}
+                </h3>
+                <p className="text-gray-400 text-sm leading-relaxed mb-6 font-medium max-w-2xl">
+                  {layer.desc}
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  {layer.details.map((detail, j) => (
+                    <div key={j} className="bg-white/5 border border-white/5 px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest text-primary/70">
+                      {detail}
+                    </div>
+                  ))}
+                </div>
+              </div>
+              {i < layers.length - 1 && (
+                <div className="absolute left-[-55px] top-12 bottom-[-64px] w-[2px] bg-gradient-to-b from-primary/50 to-transparent" />
+              )}
+            </motion.div>
+          ))}
+        </div>
+
+        <div className="mt-24 glass-card p-10 border-accent/20 bg-accent/5">
+           <div className="flex items-center gap-4 mb-6">
+              <Zap className="text-accent" />
+              <h2 className="text-2xl font-black uppercase tracking-tight">Real-time Data Flow</h2>
+           </div>
+           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+              {[
+                { label: "Request Latency", val: "14ms" },
+                { label: "Reasoning Depth", val: "Level 4" },
+                { label: "State Sync", val: "Active" },
+                { label: "Memory Type", val: "Vector RAG" }
+              ].map((s, i) => (
+                <div key={i} className="p-4 rounded-xl bg-black/40 border border-white/5">
+                   <p className="text-[8px] font-black text-gray-500 uppercase tracking-widest mb-1">{s.label}</p>
+                   <p className="text-lg font-black text-white">{s.val}</p>
+                </div>
+              ))}
+           </div>
+        </div>
       </div>
     </div>
   );
@@ -1092,6 +1384,7 @@ function App() {
            '/fleet': "Accessing Fleet Control Mesh. All agents reporting for duty.",
            '/mcp': "Model Context Protocol Hub synchronized.",
            '/security': "Security Sentinal active. Scanning for vulnerabilities.",
+           '/architecture': "Technical system architecture and data flow diagram.",
            '/settings': "System configuration interface loaded.",
            '/about': "Mission details and team profile."
         };
@@ -1108,6 +1401,7 @@ function App() {
       case '/fleet': return <FleetPage />;
       case '/mcp': return <McpHub />;
       case '/security': return <SecurityPage onTransfer={handleTransferToAI} />;
+      case '/architecture': return <ArchitecturePage />;
       case '/settings': return <SettingsPage voiceEnabled={voiceEnabled} setVoiceEnabled={setVoiceEnabled} />;
       default: return <><Hero /><Dashboard initialGoal={globalGoal} setInitialGoal={setGlobalGoal} voiceEnabled={voiceEnabled} /><Features navigate={navigate} /></>;
     }
