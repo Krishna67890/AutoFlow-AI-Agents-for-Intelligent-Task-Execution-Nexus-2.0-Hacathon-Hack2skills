@@ -7,6 +7,12 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
+// Request Logger Middleware
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+  next();
+});
+
 // Health Check for Proxy Verification
 app.get('/', (req, res) => {
   res.json({ status: "online", system: "Nexus-V11.0", port: PORT });
@@ -140,4 +146,8 @@ app.post('/api/agent', async (req, res) => {
   });
 });
 
-app.listen(PORT, () => console.log(`🚀 v11.0 ADVANCED MESH ONLINE`));
+app.listen(5000, '0.0.0.0', () => {
+  console.log(`🚀 NEXUS ORCHESTRATOR ONLINE`);
+  console.log(`📡 Portal: http://127.0.0.1:5000`);
+  console.log(`🛠️ Route: POST /api/agent`);
+});
