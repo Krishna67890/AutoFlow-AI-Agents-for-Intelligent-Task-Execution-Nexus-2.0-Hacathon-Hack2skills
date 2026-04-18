@@ -66,6 +66,11 @@ import {
   ActivitySquare
 } from 'lucide-react';
 
+import logo from './assets/logo.webp';
+import boyImg from './assets/boy.png';
+import girlImg from './assets/girl.png';
+import NeuralGateway from './components/NeuralGateway';
+
 // --- Custom Router Logic ---
 
 const useAppRouter = () => {
@@ -126,13 +131,10 @@ const Navbar = ({ onMenuClick, navigate, currentPath }) => (
         <div className="relative group">
           <div className="w-12 h-12 bg-gradient-to-tr from-primary to-accent rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(0,242,254,0.2)] border border-white/10 overflow-hidden">
             <img
-              src="https://images.unsplash.com/photo-1614850523296-d8c1af93d400?w=100&h=100&fit=crop"
-              alt="Logo"
-              className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
+              src={logo}
+              alt="AutoFlow AI Logo"
+              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
             />
-            <div className="absolute inset-0 flex items-center justify-center bg-dark/20 backdrop-blur-[1px]">
-               <BrainCircuit className="text-white" size={24} />
-            </div>
           </div>
           <div className="absolute -inset-1 bg-primary/20 rounded-2xl blur opacity-0 group-hover:opacity-100 transition-opacity" />
         </div>
@@ -348,7 +350,7 @@ const AboutUs = ({ voiceEnabled }) => {
     {
       name: "Krishna Patil Rajput",
       role: "LEAD DEVELOPER",
-      image: "https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=400&h=400&fit=crop",
+      image: boyImg,
       icon: <Code size={32} className="text-primary" />,
       desc: "Architected the multi-agent orchestration engine, custom routing, and high-fidelity dashboard UI.",
       speech: "Krishna Patil Rajput. Lead Developer. He architected the multi-agent orchestration engine and high-fidelity dashboard UI."
@@ -356,7 +358,7 @@ const AboutUs = ({ voiceEnabled }) => {
     {
       name: "Hima Krishna Priya",
       role: "PPT MAKER & STRATEGIST",
-      image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop",
+      image: girlImg,
       icon: <Layers size={32} className="text-accent" />,
       desc: "Designed the technical strategy, visual presentations, and mission-control logic for winning Nexus 2.0.",
       speech: "Hima Krishna Priya. Strategist. She designed the technical strategy and mission-control logic for the Nexus 2 point 0 hackathon."
@@ -1361,6 +1363,7 @@ function App() {
   const { currentPath, navigate } = useAppRouter();
   const [globalGoal, setGlobalGoal] = useState('');
   const [voiceEnabled, setVoiceEnabled] = useState(true); // Default to true for hackathon impact
+  const [user, setUser] = useState(null);
 
   const handleTransferToAI = (goalText) => {
     setGlobalGoal(goalText);
@@ -1386,7 +1389,8 @@ function App() {
            '/security': "Security Sentinal active. Scanning for vulnerabilities.",
            '/architecture': "Technical system architecture and data flow diagram.",
            '/settings': "System configuration interface loaded.",
-           '/about': "Mission details and team profile."
+           '/about': "Mission details and team profile.",
+           '/auth': "Neural Gateway active. Please provide identity key."
         };
 
         const msg = welcomeMessages[currentPath] || "Navigating to " + currentPath;
@@ -1395,6 +1399,15 @@ function App() {
   }, [currentPath]);
 
   const renderContent = () => {
+    if (!user && currentPath !== '/auth') {
+      navigate('/auth');
+      return null;
+    }
+
+    if (currentPath === '/auth') {
+      return <NeuralGateway onAuth={setUser} navigate={navigate} />;
+    }
+
     switch (currentPath) {
       case '/': return <><Hero /><Dashboard initialGoal={globalGoal} setInitialGoal={setGlobalGoal} voiceEnabled={voiceEnabled} /><Features navigate={navigate} /></>;
       case '/about': return <AboutUs voiceEnabled={voiceEnabled} />;
@@ -1409,26 +1422,32 @@ function App() {
 
   return (
     <div className="min-h-screen bg-dark text-white selection:bg-primary/30 scroll-smooth">
-      <Navbar onMenuClick={() => setIsMobileNavOpen(true)} navigate={navigate} currentPath={currentPath} />
-      <Sidebar navigate={navigate} currentPath={currentPath} />
-      <MobileNav isOpen={isMobileNavOpen} setIsOpen={setIsMobileNavOpen} navigate={navigate} currentPath={currentPath} />
+      {user && (
+        <>
+          <Navbar onMenuClick={() => setIsMobileNavOpen(true)} navigate={navigate} currentPath={currentPath} />
+          <Sidebar navigate={navigate} currentPath={currentPath} />
+          <MobileNav isOpen={isMobileNavOpen} setIsOpen={setIsMobileNavOpen} navigate={navigate} currentPath={currentPath} />
+        </>
+      )}
 
-      <main className="relative">
+      <main className={`relative ${!user ? 'pt-0' : ''}`}>
         {renderContent()}
       </main>
 
-      <footer className="py-20 border-t border-white/5 bg-dark xl:ml-64 lg:ml-20 no-print">
-        <div className="max-w-[1400px] mx-auto px-8 text-center">
-          <div className="text-2xl font-black tracking-tighter mb-2 bg-gradient-to-r from-primary to-white bg-clip-text text-transparent">
-            AUTOFLOW AI
+      {user && (
+        <footer className="py-20 border-t border-white/5 bg-dark xl:ml-64 lg:ml-20 no-print">
+          <div className="max-w-[1400px] mx-auto px-8 text-center">
+            <div className="text-2xl font-black tracking-tighter mb-2 bg-gradient-to-r from-primary to-white bg-clip-text text-transparent">
+              AUTOFLOW AI
+            </div>
+            <p className="text-[9px] font-black text-gray-700 uppercase tracking-[0.5em] mb-4">Nexus 2.0 Hackathon Submission</p>
+            <div className="flex justify-center gap-6">
+               <Github size={18} className="text-gray-600 hover:text-white transition-colors cursor-pointer" />
+               <Twitter size={18} className="text-gray-600 hover:text-white transition-colors cursor-pointer" />
+            </div>
           </div>
-          <p className="text-[9px] font-black text-gray-700 uppercase tracking-[0.5em] mb-4">Nexus 2.0 Hackathon Submission</p>
-          <div className="flex justify-center gap-6">
-             <Github size={18} className="text-gray-600 hover:text-white transition-colors cursor-pointer" />
-             <Twitter size={18} className="text-gray-600 hover:text-white transition-colors cursor-pointer" />
-          </div>
-        </div>
-      </footer>
+        </footer>
+      )}
     </div>
   );
 }
