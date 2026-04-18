@@ -14,7 +14,7 @@ app.use((req, res, next) => {
 });
 
 // Health Check for Proxy Verification
-app.get('/', (req, res) => {
+app.get('/api/health', (req, res) => {
   res.json({ status: "online", system: "Nexus-V11.0", port: PORT });
 });
 
@@ -146,19 +146,5 @@ app.post('/api/agent', async (req, res) => {
   });
 });
 
-// Catch-all for 404s
-app.use((req, res) => {
-  console.log(`[404] ${req.method} ${req.url} - Not Handled`);
-  res.status(404).json({ error: "Route not found in Nexus Backend" });
-});
-
 // Export for Vercel Serverless
-if (process.env.NODE_ENV !== 'production') {
-  app.listen(5000, '0.0.0.0', () => {
-    console.log(`🚀 NEXUS ORCHESTRATOR ONLINE`);
-    console.log(`📡 Portal: http://127.0.0.1:5000`);
-    console.log(`🛠️ Route: POST /api/agent`);
-  });
-}
-
 module.exports = app;
