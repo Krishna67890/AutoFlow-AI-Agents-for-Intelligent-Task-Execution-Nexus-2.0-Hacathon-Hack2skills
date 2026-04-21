@@ -348,20 +348,31 @@ const AboutUs = ({ voiceEnabled }) => {
 
   const team = [
     {
-      name: "Krishna Patil Rajput",
-      role: "LEAD DEVELOPER",
+      name: "Krishna Patil Rajput (Leader)",
+      role: "SYSTEM ARCHITECT & LEAD",
       image: boyImg,
       icon: <Code size={32} className="text-primary" />,
       desc: "Architected the multi-agent orchestration engine, custom routing, and high-fidelity dashboard UI.",
-      speech: "Krishna Patil Rajput. Lead Developer. He architected the multi-agent orchestration engine and high-fidelity dashboard UI."
+      github: "github.com/krishna67890",
+      speech: "Krishna Patil Rajput. Leader and System Architect. He architected the multi-agent orchestration engine and high-fidelity dashboard UI."
+    },
+    {
+      name: "Krishna Premshankar Kanojiya",
+      role: "CORE DEVELOPER",
+      image: boyImg,
+      icon: <BrainCircuit size={32} className="text-primary" />,
+      desc: "Expert in autonomous agent logic and backend integration systems.",
+      email: "krishna12082006@gmail.com",
+      speech: "Krishna Premshankar Kanojiya. Core Developer. Expert in autonomous agent logic and backend integration systems."
     },
     {
       name: "Hima Krishna Priya",
-      role: "PPT MAKER & STRATEGIST",
+      role: "STRATEGIC PLANNER",
       image: girlImg,
       icon: <Layers size={32} className="text-accent" />,
       desc: "Designed the technical strategy, visual presentations, and mission-control logic for winning Nexus 2.0.",
-      speech: "Hima Krishna Priya. Strategist. She designed the technical strategy and mission-control logic for the Nexus 2 point 0 hackathon."
+      email: "yadlahimakrishnapriya@gmail.com",
+      speech: "Hima Krishna Priya. Strategic Planner. She designed the technical strategy and mission-control logic for the Nexus 2 point 0 hackathon."
     }
   ];
 
@@ -398,6 +409,37 @@ const AboutUs = ({ voiceEnabled }) => {
                     alt={member.name}
                     className="w-20 h-20 rounded-2xl object-cover border-2 border-white/10 group-hover:border-primary/50 transition-all shadow-xl"
                   />
+                  <div className="absolute -bottom-2 -right-2 bg-dark border border-white/10 p-1.5 rounded-lg">
+                    {member.icon}
+                  </div>
+                </div>
+              </div>
+
+              <h3 className="text-2xl font-black uppercase tracking-tight mb-1 group-hover:text-primary transition-colors">
+                {member.name}
+              </h3>
+              <p className="text-[10px] font-black text-primary uppercase tracking-[0.3em] mb-6">
+                {member.role}
+              </p>
+
+              <p className="text-gray-500 text-sm font-medium mb-8 leading-relaxed uppercase tracking-wide">
+                {member.desc}
+              </p>
+
+              <div className="flex gap-4 pt-6 border-t border-white/5">
+                {member.github && (
+                  <div className="flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                    <Github size={14} className="text-primary" />
+                    {member.github}
+                  </div>
+                )}
+                {member.email && (
+                  <div className="flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                    <Mail size={14} className="text-accent" />
+                    {member.email}
+                  </div>
+                )}
+              </div>
                   <div className="absolute -bottom-2 -right-2 bg-dark p-1.5 rounded-lg border border-white/10">
                     {member.icon}
                   </div>
@@ -679,6 +721,7 @@ const Dashboard = ({ initialGoal = '', setInitialGoal, voiceEnabled }) => {
 
     try {
       // Robust URL resolution for both Dev and Production (Hackathon Resilience)
+      // Check for Vercel deployment hostname or local
       const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
       const apiUrl = isLocal ? 'http://127.0.0.1:5000/api/agent' : '/api/agent';
 
