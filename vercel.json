@@ -19,7 +19,11 @@
       "destination": "/api/index.js"
     },
     {
-      "source": "/((?!api/).*)",
+      "source": "/((?!api|assets|.*\\.).*)",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/(fleet|mcp|security|architecture|settings|about|auth)",
       "destination": "/index.html"
     }
   ]
