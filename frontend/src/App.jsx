@@ -440,15 +440,6 @@ const AboutUs = ({ voiceEnabled }) => {
                   </div>
                 )}
               </div>
-                  <div className="absolute -bottom-2 -right-2 bg-dark p-1.5 rounded-lg border border-white/10">
-                    {member.icon}
-                  </div>
-                </div>
-                <Volume2 size={16} className="text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity" />
-              </div>
-              <h3 className="text-2xl font-black uppercase tracking-tighter mb-2 group-hover:text-primary transition-colors">{member.name}</h3>
-              <p className="text-[10px] font-black text-primary uppercase tracking-[0.4em] mb-6">{member.role}</p>
-              <p className="text-gray-500 text-sm leading-relaxed font-medium">{member.desc}</p>
               <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-100 transition-opacity">
                  <Share2 size={40} className="text-white" />
               </div>
