@@ -473,13 +473,21 @@ const AboutUs = ({ voiceEnabled }) => {
   );
 };
 
-const SettingsPage = ({ voiceEnabled, setVoiceEnabled }) => {
+const SettingsPage = ({ voiceEnabled, setVoiceEnabled, onLogout }) => {
   const [autoHeal, setAutoHeal] = useState(true);
 
   return (
     <div className="py-32 px-4 lg:px-8 xl:ml-64 lg:ml-20 min-h-screen no-print">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-5xl font-black uppercase tracking-tighter mb-12">System Configuration</h1>
+        <div className="flex justify-between items-center mb-12">
+          <h1 className="text-5xl font-black uppercase tracking-tighter">System Configuration</h1>
+          <button
+            onClick={onLogout}
+            className="px-6 py-3 bg-red-500/10 border border-red-500/30 text-red-500 text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-red-500 transition-all hover:text-white flex items-center gap-2"
+          >
+            <LogOut size={14} /> Terminate Session
+          </button>
+        </div>
 
         <div className="space-y-6">
           <div className="glass-card p-8 flex items-center justify-between border-white/5">
@@ -1469,7 +1477,7 @@ function App() {
       case '/mcp': return <McpHub />;
       case '/security': return <SecurityPage onTransfer={handleTransferToAI} />;
       case '/architecture': return <ArchitecturePage />;
-      case '/settings': return <SettingsPage voiceEnabled={voiceEnabled} setVoiceEnabled={setVoiceEnabled} />;
+      case '/settings': return <SettingsPage voiceEnabled={voiceEnabled} setVoiceEnabled={setVoiceEnabled} onLogout={() => setUser(null)} />;
       default: return <><Hero /><Dashboard initialGoal={globalGoal} setInitialGoal={setGlobalGoal} voiceEnabled={voiceEnabled} /><Features navigate={navigate} /></>;
     }
   };
